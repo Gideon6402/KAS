@@ -35,9 +35,9 @@ to turtle-setup ;; turtle procedure
     ]
   )
 
-  set sugar random-in-range 5 25
-  set metabolism random-in-range 1 4
-  set vision random-in-range 1 6
+  set sugar 15
+  set metabolism 2.5
+  set vision 3.5
   ;; turtles can look horizontally and vertically up to vision patches
   ;; but cannot look diagonally at all
   set vision-points []
@@ -361,7 +361,7 @@ CHOOSER
 initial-location
 initial-location
 "all-over-grid" "third-quadrant"
-0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -723,7 +723,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.3.0
+NetLogo 6.4.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
