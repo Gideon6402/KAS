@@ -31,18 +31,7 @@ to turtle-setup ;; turtle procedure
     ]
     initial-location = "third-quadrant"
     [
-      ; get available patches in the lower left corner
-      let target-patches patches with [
-        pxcor < 0.5 * max-pxcor and; patch is in the left halve
-        pycor < 0.5 * max-pxcor and; patch is in the lower halve
-        not any? other turtles-here; there is no turtle in this patch yet
-      ]
-      ;; move the turtle to one of these patches (if there are available patches)
-      ifelse (any? target-patches) [
-        move-to one-of target-patches
-      ][
-        show "There are to many turtles to place on the grid"
-      ]
+      ;; implement this block for Exercise 3.1
     ]
   )
 
@@ -115,7 +104,20 @@ to turtle-eat ;; turtle procedure
 end
 
 to turtle-share ;; turtle procedure
-  ;; implement this procedure yourself for Exercise 3.2
+  ;; Ask all turtles that are in vision
+  let my-sugar-level sugar;
+  ask other turtles with [ distance myself <= vision
+                           and sugar < (my-sugar-level - 1)]; we could also use "[sugar] of myself"
+  [
+    set sugar (sugar + 1)
+    ask myself [
+      set sugar (sugar - 1)
+    ]
+  ]
+
+
+
+  ;; Give turtle that has less then 2 food, 1 food
 end
 
 to patch-recolor ;; patch procedure
@@ -289,7 +291,7 @@ initial-population
 initial-population
 10
 1000
-1000.0
+80.0
 10
 1
 NIL
@@ -372,7 +374,7 @@ CHOOSER
 initial-location
 initial-location
 "all-over-grid" "third-quadrant"
-1
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
