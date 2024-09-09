@@ -42,7 +42,6 @@ to turtle-setup ;; turtle procedure
         move-to one-of target-patches
       ][
         show "There are to many turtles to place on the grid"
-        stop
       ]
     ]
   )
@@ -290,7 +289,7 @@ initial-population
 initial-population
 10
 1000
-410.0
+1000.0
 10
 1
 NIL
