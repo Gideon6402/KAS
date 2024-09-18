@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<knowledge>
+    <title>Tortious act</title>
+
+    <goal name="must-repair-damage">
+		<description>Does the person have to repair the damage?</description>
+		<answer value="yes"><![CDATA[The person <em>has</em> to repair the damage]]></answer>
+		<answer>The person does not have to repair the damage</answer>
+	</goal>
+
+
+	<!-- 6:162 Definition of a tortious act -->
+	<rule>
+		<description>If a person commits a tortious act that can be attributed to them, they must repair the damage caused.</description>
+		<if>
+			<and>
+				<fact name="tortious-act">yes</fact>
+				<fact name="attributable-to-person">yes</fact>
+				<fact name="justification-for-behaviour">no</fact>
+			</and>
+		</if>
+		<then>
+			<fact name="must-repair-damage">yes</fact>
+		</then>
+	</rule>
+
+	<!-- Violated standard of behaviour must intend to offer protection against damage -->
+	<rule>
+		<description>If the violated standard of behaviour does not intend to offer protection against the specific type of damage suffered, there is no obligation to repair the damage.</description>
+		<if>
+			<fact name="standard-protects-against-damage">no</fact>
+		</if>
+		<then>
+			<fact name="must-repair-damage">no</fact>
+		</then>
+	</rule>
+
+	<!-- 6:164 Children younger than 14 years-->
+	<rule>
+		<description>The behaviour of a child younger than fourteen years old cannot be attributed as a tortious act.</description>
+		<if>
+			<and>
+				<fact name="person-age-greater-than-14">yes</fact>
+				<fact name="tortious-act">yes</fact>
+			</and>
+		</if>
+		<then>
+			<fact name="attributable-to-person">yes</fact>
+		</then>
+	</rule>
+
+	<!-- 6:165 Children under influence of a mental or physical disability -->
+	<rule>
+		<description>Even if a person of fourteen years or older commits an act under the influence of a mental or physical disability, it can still be attributed to them as a tortious act.</description>
+		<if>
+			<and>
+				<fact name="person-age-greater-than-14">yes</fact>
+				<fact name="tortious-act">yes</fact>
+				<or>
+					<fact name="mental-or-physical-disability">yes</fact>
+					<fact name="mental-or-physical-disability">no</fact>
+				</or>
+			</and>
+		</if>
+		<then>
+			<fact name="attributable-to-person">yes</fact>
+		</then>
+	</rule>
+
+	<question>
+		<description>Is the person older than 14?</description>
+		<option>
+			<description>Yes</description>
+			<then>
+				<fact name="person-age-greater-than-14">yes</fact>
+			</then>
+		</option>
+		<option>
+			<description>No</description>
+			<then>
+				<fact name="person-age-greater-than-14">no</fact>
+			</then>
+		</option>
+	</question>
+
+
+	<question>
+		<description>Did the person commit a tortious-act?</description>
+		<option>
+			<description>Yes</description>
+			<then>
+				<fact name="tortious-act">yes</fact>
+			</then>
+		</option>
+		<option>
+			<description>No</description>
+			<then>
+				<fact name="tortious-act">no</fact>
+			</then>
+		</option>
+	</question>
+
+	<question>
+		<description>Did the violated standard of behaviour intend to offer protection against damagae as suffered by the injured person</description>
+		<option>
+			<description>Yes</description>
+			<then>
+				<fact name="standard-protects-against-damage">yes</fact>
+			</then>
+		</option>
+		<option>
+			<description>No</description>
+			<then>
+				<fact name="standard-protects-against-damage">no</fact>
+			</then>
+		</option>
+	</question>
+
+	<question>
+		<description>Does the person have a mental or physical disability</description>
+		<option>
+			<description>Yes</description>
+			<then>
+				<fact name="mental-or-physical-disability">yes</fact>
+			</then>
+		</option>
+		<option>
+			<description>No</description>
+			<then>
+				<fact name="mental-or-physical-disability">no</fact>
+			</then>
+		</option>
+	</question>
+
+	<question>
+		<description>Did the act or omission violate someone's legal right without any valid justification?</description>
+		<option>
+			<description>Yes</description>
+			<then>
+				<fact name="justification-for-behaviour">yes</fact>
+			</then>
+		</option>
+		<option>
+			<description>No</description>
+			<then>
+				<fact name="justification-for-behaviour">no</fact>
+			</then>
+		</option>
+	</question>
+
+</knowledge>
