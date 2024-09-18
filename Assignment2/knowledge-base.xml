@@ -16,7 +16,6 @@
 			<and>
 				<fact name="tortious-act">yes</fact>
 				<fact name="attributable-to-person">yes</fact>
-				<fact name="justification-for-behaviour">no</fact>
 			</and>
 		</if>
 		<then>
@@ -128,22 +127,6 @@
 			<description>No</description>
 			<then>
 				<fact name="mental-or-physical-disability">no</fact>
-			</then>
-		</option>
-	</question>
-
-	<question>
-		<description>Did the act or omission violate someone's legal right without any valid justification?</description>
-		<option>
-			<description>Yes</description>
-			<then>
-				<fact name="justification-for-behaviour">yes</fact>
-			</then>
-		</option>
-		<option>
-			<description>No</description>
-			<then>
-				<fact name="justification-for-behaviour">no</fact>
 			</then>
 		</option>
 	</question>
