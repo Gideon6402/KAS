@@ -232,6 +232,16 @@ end
 ;; ADD code here
 to tit-for-tat [play-history play-partner-history]
   set num-tit-for-tat-games num-tit-for-tat-games + 1
+  ifelse (play-partner-history = []) [
+    set action COOPERATE
+  ][
+    let partners-previous-action (last play-partner-history)
+    if partners-previous-action = DEFECT [ set action DEFECT ]
+    if partners-previous-action = COOPERATE [ set action COOPERATE ]
+  ]
+  let action-string ifelse-value action ["defects"] ["cooperates"]
+  let output-str (word strategy " with " ([strategy] of partner) " does " action-string)
+  print output-str
 end
 
 ;; ADD code here
@@ -370,7 +380,7 @@ n-random
 n-random
 0
 100
-10.0
+0.0
 1
 1
 NIL
@@ -385,7 +395,7 @@ n-cooperate
 n-cooperate
 0
 100
-10.0
+1.0
 1
 1
 NIL
@@ -400,7 +410,7 @@ n-defect
 n-defect
 0
 100
-10.0
+1.0
 1
 1
 NIL
@@ -415,7 +425,7 @@ n-tit-for-tat
 n-tit-for-tat
 0
 100
-10.0
+1.0
 1
 1
 NIL
@@ -430,7 +440,7 @@ n-my-strat
 n-my-strat
 0
 100
-10.0
+0.0
 1
 1
 NIL
@@ -445,7 +455,7 @@ n-grim
 n-grim
 0
 100
-10.0
+0.0
 1
 1
 NIL
