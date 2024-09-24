@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<knowledge>
+    <title>Tortious act</title>
+
+    <goal name="must-repair-damage">
+        <description>Does the person have to repair the damage?</description>
+        <answer value="yes"><![CDATA[The person <em>has</em> to repair the damage]]></answer>
+        <answer>The person does not have to repair the damage</answer>
+    </goal>
+
+
+    <rule>
+        <description>Must he repair the damage?</description>
+        <if>
+            <and>
+                <fact name="tortious">yes</fact>
+                <fact name="attribute-to-him">yes</fact>
+                <fact name="spirit-of-law">yes</fact>
+            </and>
+        </if>
+        <then>
+            <fact name="must-repair-damage">yes</fact>
+        </then>        
+    </rule>
+    
+    <rule>
+        <description>Is he tortious?</description>
+        <if>
+            <and>
+                <or>
+                    <fact name="violation-of-someones-right">yes</fact>
+                    <fact name="act-omission-of-duty-law-or-unwritten-law">yes</fact>
+                </or>
+                <fact name="justification">no</fact>
+            </and>
+        </if>
+        <then>
+            <fact name="tortious">yes</fact>
+        </then>
+    </rule>
+
+    <rule>
+        <description>Can the tortious-act be attributed to him?</description>
+        <if>
+            <and>
+                <fact name="young">no</fact>
+                <or>
+                    <fact name="his-fault">yes</fact>
+                    <fact name="accountable-by-law-or-general-principle">yes</fact>
+                </or>
+            </and>
+        </if>
+        <then>
+            <fact name="attribute-to-him">yes</fact>
+        </then>
+    </rule>
+    
+    <!-- QUESTIONS                                                          -->
+    <question>
+        <description>Did the person violate someone else's right?</description>
+        <option>
+            <description>Yes</description>
+            <then>
+                <fact name="violation-of-someones-right">yes</fact>
+            </then>
+        </option>
+        <option>
+            <description>No</description>
+            <then>
+                <fact name="violation-of-someones-right">no</fact>
+            </then>
+        </option>
+    </question>
+
+    <question>
+        <description>Did the person commit an act or omission in violation of a duty imposed by law or of what according to unwritten law has to be regarded as proper social conduct</description>
+        <option>
+            <description>Yes</description>
+            <then>
+                <fact name="act-omission-of-duty-law-or-unwritten-law">yes</fact>
+            </then>
+        </option>
+        <option>
+            <description>No</description>
+            <then>
+                <fact name="act-omission-of-duty-law-or-unwritten-law">no</fact>
+            </then>
+        </option>
+    </question>
+
+    <question>
+        <description>Did the person have a justification?</description>
+        <option>
+            <description>Yes</description>
+            <then>
+                <fact name="justification">yes</fact>
+            </then>
+        </option>
+        <option>
+            <description>No</description>
+            <then>
+                <fact name="justification">no</fact>
+            </then>
+        </option>
+    </question>
+
+    <question>
+        <description>Is the person younger than 14 years old?</description>
+        <option>
+            <description>Yes</description>
+            <then>
+                <fact name="young">yes</fact>
+            </then>
+        </option>
+        <option>
+            <description>No</description>
+            <then>
+                <fact name="young">no</fact>
+            </then>
+        </option>
+    </question>
+
+    <question>
+        <description>Did it result from the person's fault?</description>
+        <option>
+            <description>Yes</description>
+            <then>
+                <fact name="his-fault">yes</fact>
+            </then>
+        </option>
+        <option>
+            <description>No</description>
+            <then>
+                <fact name="his-fault">no</fact>
+            </then>
+        </option>
+    </question>
+
+    <question>
+        <description>Did it result from a cause for which he is accountable by virtue of law or generally accepted principles</description>
+        <option>
+            <description>Yes</description>
+            <then>
+                <fact name="accountable-by-law-or-general-principle">yes</fact>
+            </then>
+        </option>
+        <option>
+            <description>No</description>
+            <then>
+                <fact name="accountable-by-law-or-general-principle">no</fact>
+            </then>
+        </option>
+    </question>
+
+    <question>
+        <description>Did the violated standard of behaviour intend to offer protection against damage as suffered by the injured person?</description>
+        <option>
+            <description>Yes</description>
+            <then>
+                <fact name="spirit-of-law">yes</fact>
+            </then>
+        </option>
+        <option>
+            <description>No</description>
+            <then>
+                <fact name="spirit-of-law">no</fact>
+            </then>
+        </option>
+    </question>
+
+    <question>
+        <description>Did it result from his fault?</description>
+        <option>
+            <description>Yes</description>
+            <then>
+                <fact name="his-fault">yes</fact>
+            </then>
+        </option>
+        <option>
+            <description>No</description>
+            <then>
+                <fact name="his-fault">no</fact>
+            </then>
+        </option>
+    </question>
+</knowledge>

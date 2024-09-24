@@ -9,14 +9,12 @@
 	</goal>
 
 
-	<!-- 6:162 Definition of a tortious act -->
+	<!-- 6:162.1 must repair damage -->
 	<rule>
 		<description>If a person commits a tortious act that can be attributed to them, they must repair the damage caused.</description>
 		<if>
 			<and>
 				<fact name="tortious-act">yes</fact>
-				<fact name="attributable-to-person">yes</fact>
-				<fact name="justification-for-behaviour">no</fact>
 			</and>
 		</if>
 		<then>
@@ -24,7 +22,22 @@
 		</then>
 	</rule>
 
-	<!-- Violated standard of behaviour must intend to offer protection against damage -->
+	<!-- 6:162.1 & 6:162.2 & 6:162.3 definition tortious act -->
+	<rule>
+		<description>Is it a tortious act</description>
+		<if>
+			<and>
+				<fact name="attributable-to-person">yes</fact>
+				<fact name="justification-for-behaviour">no</fact>
+				<fact name="unlawful-act-by-his-fault">yes</fact>
+			</and>
+		</if>
+		<then>
+			<fact name="tortious-act">yes</fact>
+		</then>
+	</rule>
+
+	<!-- 6:163 Violated standard of behaviour must intend to offer protection against damage -->
 	<rule>
 		<description>If the violated standard of behaviour does not intend to offer protection against the specific type of damage suffered, there is no obligation to repair the damage.</description>
 		<if>
@@ -41,7 +54,7 @@
 		<if>
 			<and>
 				<fact name="person-age-greater-than-14">yes</fact>
-				<fact name="tortious-act">yes</fact>
+				<fact name="unlawful-act-by-his-fault">yes</fact>
 			</and>
 		</if>
 		<then>
@@ -85,23 +98,23 @@
 
 
 	<question>
-		<description>Did the person commit a tortious-act?</description>
+		<description>Did the person commit a unlawful act or omission that results from his fault or from a cause he is accountable by virtue of law or generally accepted principles?</description>
 		<option>
 			<description>Yes</description>
 			<then>
-				<fact name="tortious-act">yes</fact>
+				<fact name="unlawful-act-by-his-fault">yes</fact>
 			</then>
 		</option>
 		<option>
 			<description>No</description>
 			<then>
-				<fact name="tortious-act">no</fact>
+				<fact name="unlawful-act-by-his-fault">no</fact>
 			</then>
 		</option>
 	</question>
 
 	<question>
-		<description>Did the violated standard of behaviour intend to offer protection against damagae as suffered by the injured person</description>
+		<description>Did the violated standard of behaviour intend to offer protection against damagae as suffered by the injured person?</description>
 		<option>
 			<description>Yes</description>
 			<then>
