@@ -223,40 +223,117 @@ to cooperate-strat [play-history play-partner-history]
   set action COOPERATE
 end
 
-;; ADD code here
+
 to defect-strat [play-history play-partner-history]
   set num-defect-games num-defect-games + 1
   set action DEFECT
 end
 
-;; ADD code here
-to tit-for-tat [play-history play-partner-history]
-  set num-tit-for-tat-games num-tit-for-tat-games + 1
-  ifelse (play-partner-history = []) [
-    set action COOPERATE
+to decide-by-tit-for-tat [play-history play-partner-history]
+    ifelse (play-partner-history = []) [
+    set action COOPERATE  ; Did not interact with partner yet thus cooperate
   ][
+    ; tit-for-tat mechanism:
     let partners-previous-action (last play-partner-history)
     if partners-previous-action = DEFECT [ set action DEFECT ]
     if partners-previous-action = COOPERATE [ set action COOPERATE ]
   ]
-  let action-string ifelse-value action ["defects"] ["cooperates"]
-  let output-str (word strategy " with " ([strategy] of partner) " does " action-string)
-  print output-str
 end
 
-;; ADD code here
+to tit-for-tat [play-history play-partner-history]
+  set num-tit-for-tat-games num-tit-for-tat-games + 1
+  decide-by-tit-for-tat play-history play-partner-history
+
+  ; debug
+  ;let action-string ifelse-value action ["defects"] ["cooperates"]
+  ;let output-str (word strategy " with " ([strategy] of partner) " does " action-string)
+  ;print output-str
+end
+
+
 to grim [play-history play-partner-history]
   set num-grim-games num-grim-games + 1
+
+  ; Grim cooperates in the first round, when the partner has not defected him yet
+  ; The moment the partner defects, Grim also starts defecting. Thus:
+  ; Grim cooperates if the partner has never defected him.
+  ifelse member? DEFECT play-partner-history [
+    set action DEFECT
+  ][
+    set action COOPERATE
+  ]
+
 end
 
-;; ADD code here
+
 to act-randomly [play-history play-partner-history]
   set num-random-games num-random-games + 1
+  set action one-of [true false]; true for DEFECT and false for COOPERATE
+                                ; NetLogo somehow doesn't except to put this enums in directly :(
 end
 
-;; ADD code here
+
+;; Asumptions:
+; - Adding an element to play-partner-history will not break the code
 to my-strat [play-history play-partner-history]
   set num-my-strat-games num-my-strat-games + 1
+  let number-of-interactions length play-partner-history
+
+  ; First just play tit-for-tat.
+  if number-of-interactions < 10 [
+    decide-by-tit-for-tat play-history play-partner-history
+    stop
+  ]
+
+  ; Declare and assign some variables.
+  let SUCCESFULLY-MISUSED 2; An enum that will be placed in play-partner-history.
+  let partners-previous-action (last play-partner-history)
+  let partners-previous-previous-action ; This will contain SUCCESFULLY-MISUED if applicable.
+      item (number-of-interactions - 2) play-partner-history
+
+  ; Gather data about other players.
+  if number-of-interactions = 10 [
+    set action DEFECT
+    stop
+  ]
+
+  if number-of-interactions = 11 [
+    set action DEFECT; sign to other member of my strat that we won't misuse eachother
+    stop
+  ]
+
+  ; Misuse if they cooperated despite my betrayal.
+  if number-of-interactions = 12 [
+    if partners-previous-action = COOPERATE [
+      ; debug
+      print (word "labeled " ([strategy] of partner) " as misuseable")
+
+      ; replace last element of play-partner-history with SUCCESFULLY-MISUSED
+      set play-partner-history
+        ; since this is round 11 computer counting will give 10
+        replace-item 10 play-partner-history SUCCESFULLY-MISUSED
+      ; add updated play-partner-list to attribute of turtle such that it can be used next round
+      set all-play-partner-history
+        replace-item ([who] of partner) all-play-partner-history play-partner-history
+      set action DEFECT
+      stop
+    ]
+    if partners-previous-action = DEFECT [
+      set action COOPERATE; ask for forgiveness
+      stop
+    ]
+  ]
+
+  if number-of-interactions > 11 [
+      ifelse partners-previous-previous-action = SUCCESFULLY-MISUSED [
+        set action DEFECT
+        ;print (word "Misused a " ([strategy] of partner))
+        stop
+      ][
+        decide-by-tit-for-tat play-history play-partner-history
+      ]
+  ]
+
 end
 
 
@@ -395,7 +472,7 @@ n-cooperate
 n-cooperate
 0
 100
-1.0
+30.0
 1
 1
 NIL
@@ -410,7 +487,7 @@ n-defect
 n-defect
 0
 100
-1.0
+30.0
 1
 1
 NIL
@@ -425,7 +502,7 @@ n-tit-for-tat
 n-tit-for-tat
 0
 100
-1.0
+30.0
 1
 1
 NIL
@@ -440,7 +517,7 @@ n-my-strat
 n-my-strat
 0
 100
-0.0
+30.0
 1
 1
 NIL
