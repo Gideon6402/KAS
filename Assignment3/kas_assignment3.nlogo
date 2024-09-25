@@ -272,6 +272,7 @@ end
 ; always defect.
 
 to is-always-cooperate [play-history play-partner-history]
+  let START-FUN 5
   let number-of-interactions length play-partner-history
 
   ; Declare and assign some variables.
@@ -280,31 +281,21 @@ to is-always-cooperate [play-history play-partner-history]
   let partners-previous-previous-action ; This will contain SUCCESFULLY-MISUED if applicable.
       item (number-of-interactions - 2) play-partner-history
 
-  ; Gather data about other players.
-  if number-of-interactions = 10 [
-    set action DEFECT
-    stop
-  ]
-
-  if number-of-interactions = 11 [
-    set action DEFECT; sign to other member of my strat that we won't misuse eachother
-    stop
-  ]
 
   ; Misuse if they cooperated despite my betrayal.
-  if number-of-interactions = 12 [
+  if number-of-interactions = START-FUN + 2 [
     if partners-previous-action = COOPERATE [
       ; debug
       print (word "labeled " ([strategy] of partner) " as misuseable")
 
       ; replace last element of play-partner-history with SUCCESFULLY-MISUSED
       set play-partner-history
-        ; since this is round 11 computer counting will give 10
-        replace-item 10 play-partner-history SUCCESFULLY-MISUSED
+        ; since this is round START-FUN + 2 computer counting will give START-FUN + 1
+        replace-item (START-FUN + 1) play-partner-history SUCCESFULLY-MISUSED
       ; add updated play-partner-list to attribute of turtle such that it can be used next round
       set all-play-partner-history
         replace-item ([who] of partner) all-play-partner-history play-partner-history
-      set action DEFECT
+      ;set action DEFECT; DEBUG UNCOMMENT!
       stop
     ]
     if partners-previous-action = DEFECT [
@@ -318,20 +309,71 @@ end
 to my-strat [play-history play-partner-history]
   set num-my-strat-games num-my-strat-games + 1
   let number-of-interactions length play-partner-history
+  let START-FUN 2
 
   ; First just play tit-for-tat.
-  if number-of-interactions < 10 [
+  if number-of-interactions < START-FUN [
     decide-by-tit-for-tat play-history play-partner-history
     stop
   ]
 
-  is-always-cooperate play-history play-partner-history
+  ; Declare and assign some variables.
+  let SUCCESFULLY-MISUSED 2; An enum that will be placed in play-partner-history.
+  let partners-previous-action (last play-partner-history)
+  let partners-previous-previous-action ; This will contain SUCCESFULLY-MISUED if applicable.
+      item (number-of-interactions - 2) play-partner-history
 
-  ifelse ([strategy] of partner) = "cooperate" [
-    set action DEFECT
-  ][
-    decide-by-tit-for-tat play-history play-partner-history
+  ; Gather data about other players.
+  if number-of-interactions = START-FUN [
+    set action DEFECT; test what partner will do opon defecting
+    stop
   ]
+
+  ; We wan't to detect who cooperates despite our betrayal. Therefore we shouldn't cooperate ourselves. (Maybe tit-for-tat is sufficient here)
+  if number-of-interactions = (START-FUN + 1) [
+    set action DEFECT;
+    stop
+  ]
+
+  ; Check whether partner cooperated despite our betrayal
+  if number-of-interactions = START-FUN + 2 [
+    if partners-previous-action = COOPERATE [
+      ; debug
+      print (word "labeled " ([strategy] of partner) " as misuseable")
+
+      ; replace last element of play-partner-history with SUCCESFULLY-MISUSED
+      set play-partner-history
+        ; since this is round START-FUN + 2 computer counting will give START-FUN + 1
+        replace-item (START-FUN + 1) play-partner-history SUCCESFULLY-MISUSED
+      ; add updated play-partner-list to attribute of turtle such that it can be used next round
+      set all-play-partner-history
+        replace-item ([who] of partner) all-play-partner-history play-partner-history
+      set action DEFECT; DEBUG UNCOMMENT!
+      stop
+    ]
+    if partners-previous-action = DEFECT [
+      set action COOPERATE; ask for forgiveness
+      stop
+    ]
+  ]
+
+  if number-of-interactions > START-FUN + 2 [
+      ifelse partners-previous-previous-action = SUCCESFULLY-MISUSED [
+        set action DEFECT
+        print (word "Misused a " ([strategy] of partner))
+      ][
+        decide-by-tit-for-tat play-history play-partner-history
+      ]
+  ]
+
+
+  ;is-always-cooperate play-history play-partner-history
+
+;  ifelse ([strategy] of partner) = "cooperate" [
+;    set action DEFECT
+;  ][
+;    decide-by-tit-for-tat play-history play-partner-history
+;  ]
 end
 
 
