@@ -231,7 +231,7 @@ end
 
 to decide-by-tit-for-tat [play-history play-partner-history]
     ifelse (play-partner-history = []) [
-    set action COOPERATE  ; Did not interact with partner yet: thus cooperate
+    set action COOPERATE  ; Did not interact with partner yet: cooperate.
   ][
     ; tit-for-tat mechanism:
     let partners-previous-action (last play-partner-history)
@@ -270,8 +270,63 @@ end
 ; The reason why always-defect is so powerfull is because it can misuse the always-cooperate. Therefore
 ; my strategy is to play tit-for-tat with everyone excepted for always-cooperators, against them I
 ; always defect.
+
+to is-always-cooperate [play-history play-partner-history]
+  let number-of-interactions length play-partner-history
+
+  ; Declare and assign some variables.
+  let SUCCESFULLY-MISUSED 2; An enum that will be placed in play-partner-history.
+  let partners-previous-action (last play-partner-history)
+  let partners-previous-previous-action ; This will contain SUCCESFULLY-MISUED if applicable.
+      item (number-of-interactions - 2) play-partner-history
+
+  ; Gather data about other players.
+  if number-of-interactions = 1 [
+    set action DEFECT
+    stop
+  ]
+
+  if number-of-interactions = 11 [
+    set action DEFECT; sign to other member of my strat that we won't misuse eachother
+    stop
+  ]
+
+  ; Misuse if they cooperated despite my betrayal.
+  if number-of-interactions = 12 [
+    if partners-previous-action = COOPERATE [
+      ; debug
+      print (word "labeled " ([strategy] of partner) " as misuseable")
+
+      ; replace last element of play-partner-history with SUCCESFULLY-MISUSED
+      set play-partner-history
+        ; since this is round 11 computer counting will give 10
+        replace-item 10 play-partner-history SUCCESFULLY-MISUSED
+      ; add updated play-partner-list to attribute of turtle such that it can be used next round
+      set all-play-partner-history
+        replace-item ([who] of partner) all-play-partner-history play-partner-history
+      set action DEFECT
+      stop
+    ]
+    if partners-previous-action = DEFECT [
+      set action COOPERATE; ask for forgiveness
+      stop
+    ]
+  ]
+
+end
+
 to my-strat [play-history play-partner-history]
   set num-my-strat-games num-my-strat-games + 1
+  let number-of-interactions length play-partner-history
+
+  ; First just play tit-for-tat.
+  if number-of-interactions < 10 [
+    decide-by-tit-for-tat play-history play-partner-history
+    stop
+  ]
+
+  is-always-cooperate play-history play-partner-history
+
   ifelse ([strategy] of partner) = "cooperate" [
     set action DEFECT
   ][
@@ -280,7 +335,7 @@ to my-strat [play-history play-partner-history]
 end
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;Plotting Procedures;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
