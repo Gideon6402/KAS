@@ -231,7 +231,7 @@ end
 
 to decide-by-tit-for-tat [play-history play-partner-history]
     ifelse (play-partner-history = []) [
-    set action COOPERATE  ; Did not interact with partner yet: cooperate.
+    set action COOPERATE  ; Did not interact with partner yet: thus cooperate
   ][
     ; tit-for-tat mechanism:
     let partners-previous-action (last play-partner-history)
