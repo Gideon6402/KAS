@@ -231,7 +231,7 @@ to moveToRetailer
 end
 
 to negotiateBuy
-  ; Assumptions: product of current turtle matches product of producer
+  ; Assuming product of current turtle matches product of producer
   ; Assuming we are in the scope of the trader
   ; Assuming we are directly coming from chooseProduct and that we have not moved from the producer
 
@@ -249,11 +249,10 @@ to negotiateBuy
 end
 
 to negotiateSale
-  ; Send a message to request the retailer's price of the held product
-
   ; get the retailer agent
   let theRetailer one-of retailers; There is only one retailer so this is sufficient for now
 
+  ; sent a message to offer to
   let offerMessage createMessage "OFFER-TO-SELL" who product (table:get estimatedSellPrice product)
   sendMessage theRetailer offerMessage
 
@@ -303,7 +302,7 @@ to handleMessagesRetailer
       ; Check whether offered price is low enough.
       ifelse messageNumber <= table:get prices messageProduct [
         ; If low enough buy the product, thus increase stock
-        table:put stocks messageProduct ((table:get stocks messageProduct) + 1)
+        table:put stocks messageProduct ((table:get stocks messageProduct) + saleQuantity)
                         ; Confirm offer is accepted by retailer with given product and given price
         let confimationMessage (createMessage "SELL-OFFER-ACCEPTED" who messageProduct messageNumber)
         sendMessage (turtle messageSenderID) confimationMessage
@@ -332,13 +331,9 @@ to handleMessagesProducer
     let messageProduct table:get message "product"
     let messageNumber table:get message "number"
 
-    if messageProduct != producedProduct [
-      print "Error: offered product does not match product of producer."
-    ]
-
     ifelse messageContent = "OFFER-TO-BUY" [
       ifelse messageNumber >= sellPrice [
-        set stock stock - 1
+        set stock stock - saleQuantity
         let confirmationMessage (createMessage "BUY-OFFER-ACCEPTED" who producedProduct messageNumber)
         sendMessage (turtle messageSenderID) confirmationMessage
       ][
@@ -482,7 +477,7 @@ stockDecreaseRetailer
 stockDecreaseRetailer
 0.1
 5
-0.5
+0.1
 0.1
 1
 NIL
@@ -497,7 +492,7 @@ saleQuantity
 saleQuantity
 0
 50
-15.0
+1.0
 1
 1
 NIL
@@ -533,7 +528,7 @@ producersProduction
 producersProduction
 0
 5
-1.9
+0.3
 0.1
 1
 NIL
