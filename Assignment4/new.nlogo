@@ -137,6 +137,7 @@ TO GO
       negotiateSale
     ] state = "BUY_FROM_PRODUCER" [
       ; Just wait for confirmation messages mainly, or implement this yourself
+      set state "NEGOTIATE_BUY"
     ] state = "SELL_TO_RETAILER" [
       ; Just wait for confirmation messages mainly, or implement this yourself
     ])
@@ -233,17 +234,17 @@ to negotiateBuy
   ; Select a producer to contact
   let currentProducer min-one-of producers with [producedProduct = [product] of myself] [ distance myself ]  ; Unchecked
   ; Send a message to request the price of the desired product
-  let askPriceMessage createMessage "ASK_PRICE" who product 0  ;
+  let askPriceMessage createMessage "ASK_PRICE" who product 0
   sendMessage currentProducer askPriceMessage
-  set state "BUY_FROM_PRODUCER"
+  set state "BUY_FROM_PRODUCER"  ; Wait.
 end
 
 to negotiateSale
-
-  ;****************************************
-  ; IMPLEMENT THIS AS PART OF QUESTION 1
-  ;****************************************
+  let theRetailer one-of retailers  ;  There is only one retailer so this is sufficient for now
   ; Send a message to request the retailer's price of the held product
+  let askPriceMessage createMessage "ASK_PRICE" who product 0
+  sendMessage theRetailer askPriceMessage
+  set state "BUY_FROM_RETAILER" ;  Wait.
 
 end
 
@@ -264,16 +265,40 @@ to handleMessagesTrader
       let traderBuyEstimate table:get estimatedBuyPrice messageProduct
       let traderSellEstimate table:get estimatedSellPrice messageProduct
 
-      ; If the trader overestimated the producers prize and the trader thinks he can sell it for more.
-      if traderBuyEstimate > producerPrice and producerPrice < traderSellEstimate [
+      ; Buy product if the trader overestimated the producers prize and the trader thinks he can sell it for more
+      ifelse traderBuyEstimate > producerPrice and producerPrice < traderSellEstimate [
+        ; Confirm that trader has bought product
+        let confirmationMessage createMessage "BOUGHT_YOUR_PRODUCT" who messageProduct messageNumber
+        sendMessage (turtle messageSenderID) confirmationMessage
+
+        table:put estimatedBuyPrice messageProduct producerPrice  ; Update estimate.
         set state "MOVE_TO_RETAILER"
-        print (word "trader thought price was" traderBuyEstimate " ")
-        table:put estimatedBuyPrice messageProduct producerPrice
-        print word "but found price to be " producerPrice
+      ][
+        table:put estimatedBuyPrice messageProduct (traderBuyEstimate + 1)  ; Try to offer more money next time
+        set state "NEGOTIATE_BUY"  ; Trade failed, negotiate again
       ]
-      ; TO DO
     ]
 
+    if messageContent = "OUT_OF_STOCK" [
+      set state "NEGOTIATE_BUY"  ; Negiotate another time in the hopes he'll have stock next time
+    ]
+
+    if messageContent = "RETAILER_PRICE_OFFER" [
+      let retailerPrice messageNumber
+      let traderSellEstimate table:get estimatedSellPrice messageProduct
+
+      ; Sell product if trader can receive more than estimated
+      ifelse retailerPrice > traderSellEstimate [
+        let confirmationMessage createMessage "SOLD_YOU_PRODUCT" who messageProduct messageNumber
+        sendMessage (turtle messageSenderID) confirmationMessage
+
+        table:put estimatedSellPrice messageProduct retailerPrice  ; Update estimate of sell price
+        set state "CHOOSE_PRODUCT"
+      ][
+        table:put estimatedSellPrice messageProduct (traderSellEstimate - 1)
+        set state "NEGOTIATE_SALE"
+      ]
+    ]
   ]
 
   ;empty the message queue
@@ -288,9 +313,16 @@ to handleMessagesRetailer
     let messageProduct table:get message "product"
     let messageNumber table:get message "number"
 
-    ;****************************************
-    ; IMPLEMENT THIS AS PART OF QUESTION 1
-    ;****************************************
+    if messageContent = "ASK_PRICE" [
+      let productSellPrice table:get prices messageProduct
+      let priceMessage (createMessage "RETAILER_PRICE_OFFER" who messageProduct productSellPrice)
+      sendMessage (turtle messageSenderID) priceMessage
+    ]
+
+    if messageContent = "SOLD_YOU_PRODUCT" [
+      let currentStockSize table:get stocks messageProduct
+      table:put stocks messageProduct (currentStockSize + saleQuantity)
+    ]
 
   ]
   ;empty the message queue
@@ -313,11 +345,18 @@ to handleMessagesProducer
 
     ; Send the price of product when asked and the product is available.
     if messageContent = "ASK_PRICE" [
-      if stock >= 1 [
+      ifelse stock >= 1 [
         let priceMessage (createMessage "PRODUCER_PRICE_OFFER" who producedProduct sellPrice)
         sendMessage (turtle messageSenderID) priceMessage
+      ][
+        let outOfStockMessage (createMessage "OUT_OF_STOCK" who producedProduct sellPrice)
+        sendMessage (turtle messageSenderID) outOfStockMessage
       ]
       ; Don't send a message if there is no stock
+    ]
+
+    if messageContent = "BOUGHT_YOUR_PRODUCT" [
+      set stock (stock - saleQuantity)
     ]
 
   ]
@@ -449,7 +488,7 @@ stockDecreaseRetailer
 stockDecreaseRetailer
 0.1
 5
-1.0
+0.5
 0.1
 1
 NIL
@@ -464,7 +503,7 @@ saleQuantity
 saleQuantity
 0
 50
-15.0
+18.0
 1
 1
 NIL
@@ -500,7 +539,7 @@ producersProduction
 producersProduction
 0
 5
-3.0
+0.6
 0.1
 1
 NIL
