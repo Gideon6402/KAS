@@ -245,7 +245,6 @@ to negotiateSale
   let askPriceMessage createMessage "ASK_PRICE" who product 0
   sendMessage theRetailer askPriceMessage
   set state "BUY_FROM_RETAILER" ;  Wait.
-
 end
 
 ; *********************************************************************************************************************
@@ -356,7 +355,6 @@ to handleMessagesProducer
         let outOfStockMessage (createMessage "OUT_OF_STOCK" who producedProduct sellPrice)
         sendMessage (turtle messageSenderID) outOfStockMessage
       ]
-      ; Don't send a message if there is no stock
     ]
 
     if messageContent = "BOUGHT_YOUR_PRODUCT" [

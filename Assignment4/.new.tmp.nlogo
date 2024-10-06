@@ -245,7 +245,6 @@ to negotiateSale
   let askPriceMessage createMessage "ASK_PRICE" who product 0
   sendMessage theRetailer askPriceMessage
   set state "BUY_FROM_RETAILER" ;  Wait.
-
 end
 
 ; *********************************************************************************************************************
@@ -279,7 +278,7 @@ to handleMessagesTrader
         set state "MOVE_TO_RETAILER"
       ][
         table:put estimatedBuyPrice messageProduct (traderBuyEstimate + 1)  ; Try to offer more money next time
-        set state "NEGOTIATE_BU"  ; Trade failed, negotiate again
+        set state "CHOOSE_PRODUCT"  ; Trade failed, negotiate again
       ]
     ]
 
@@ -326,7 +325,7 @@ to handleMessagesRetailer
     if messageContent = "SOLD_YOU_PRODUCT" [
       let currentStockSize table:get stocks messageProduct
       table:put stocks messageProduct (currentStockSize + saleQuantity)
-    ]
+    ]1q
 
   ]
   ;empty the message queue
@@ -356,7 +355,6 @@ to handleMessagesProducer
         let outOfStockMessage (createMessage "OUT_OF_STOCK" who producedProduct sellPrice)
         sendMessage (turtle messageSenderID) outOfStockMessage
       ]
-      ; Don't send a message if there is no stock
     ]
 
     if messageContent = "BOUGHT_YOUR_PRODUCT" [
