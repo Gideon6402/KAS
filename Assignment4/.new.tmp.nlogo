@@ -279,7 +279,7 @@ to handleMessagesTrader
         set state "MOVE_TO_RETAILER"
       ][
         table:put estimatedBuyPrice messageProduct (traderBuyEstimate + 1)  ; Try to offer more money next time
-        set state "CHOOSE_PRODUCT"  ; Trade failed, negotiate again
+        set state "NEGOTIATE_BU"  ; Trade failed, negotiate again
       ]
     ]
 
