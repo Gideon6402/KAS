@@ -266,7 +266,11 @@ to handleMessagesTrader
       let traderSellEstimate table:get estimatedSellPrice messageProduct
 
       ; Buy product if the trader overestimated the producers prize and the trader thinks he can sell it for more
+      if debug [
+        print (word " traderBuyEstimate: "traderBuyEstimate " producerPrice: "producerPrice " | producerPrice: " producerPrice " traderSellEstimate "traderSellEstimate)
+      ]
       ifelse traderBuyEstimate > producerPrice and producerPrice < traderSellEstimate [
+        if debug [ print "accepted" ]
         ; Confirm that trader has bought product
         let confirmationMessage createMessage "BOUGHT_YOUR_PRODUCT" who messageProduct messageNumber
         sendMessage (turtle messageSenderID) confirmationMessage
@@ -488,7 +492,7 @@ stockDecreaseRetailer
 stockDecreaseRetailer
 0.1
 5
-0.5
+1.0
 0.1
 1
 NIL
@@ -503,7 +507,7 @@ saleQuantity
 saleQuantity
 0
 50
-18.0
+15.0
 1
 1
 NIL
@@ -539,7 +543,7 @@ producersProduction
 producersProduction
 0
 5
-0.6
+3.0
 0.1
 1
 NIL
@@ -656,6 +660,17 @@ count traders with [product = \"Dairy\"]
 17
 1
 11
+
+SWITCH
+130
+367
+233
+400
+debug
+debug
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
